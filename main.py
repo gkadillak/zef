@@ -43,7 +43,8 @@ def main():
     """
 
     request_url = BASE_URL + '/items/search.json?q=tag:spirit-112'
-    response = requests.get(request_url, auth=requests.auth.HTTPBasicAuth('gkadillak@gmail.com', os.environ['SPRINTLY_TOKEN']))
+    # store your sprintly token in an environmental variable
+    response = requests.get(request_url, auth=requests.auth.HTTPBasicAuth('<your email here>', os.environ['SPRINTLY_TOKEN']))
     datum = json.loads(response.text)
     completed_items = [item for item in datum['items'] if item['status'] == 'completed']
 
