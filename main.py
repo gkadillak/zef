@@ -1,3 +1,4 @@
+import codecs
 import json
 import requests
 
@@ -7,21 +8,6 @@ STATUSES_TO_ROLLUP = ['completed', 'accepted']
 
 # Search API URL for reference: https://sprint.ly/api/items/search.json?q=tag:spirit-112
 # Requires basic auth, with Sprintly API token as "password", email as "username"
-
-class File(object):
-  """
-  Use a file object to catch errors
-  """
-
-  def __init__(self, file_name, method):
-    self.file_obj = open(file_name, method)
-
-  def __enter__(self):
-    return self.file_obj
-
-  def __exit__(self, type, value, traceback):
-    self.file_obj.close()
-
 
 def main():
   """
@@ -56,7 +42,7 @@ def main():
   datum = json.loads(response.text)
   rollup_items = [item for item in datum['items'] if item['status'] in STATUSES_TO_ROLLUP]
 
-  with File(OUTPUT_FILE, 'w') as file:
+  with codecs.open(OUTPUT_FILE, mode='w', encoding="utf-8") as file:
     for item in rollup_items:
       # url = "%s/%s" % (SPRINTLY_URL_BASE, item['id'])
       title = item['title']
@@ -65,7 +51,7 @@ def main():
       link = item['short_url'].rstrip("/")
       description = item['description']
 
-      message = '{title}\n{size} ({type}) [{link}]\n{description}\n'.format(
+      message = u'{title}\n{size} ({type}) [{link}]\n{description}\n'.format(
         title=title, size=size, type=type, link=link, description=description
       )
       file.write(message)
