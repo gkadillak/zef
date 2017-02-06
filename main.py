@@ -8,6 +8,17 @@ STATUSES_TO_ROLLUP = ['completed', 'accepted']
 
 # Search API URL for reference: https://sprint.ly/api/items/search.json?q=tag:spirit-112
 # Requires basic auth, with Sprintly API token as "password", email as "username"
+def count_points(stories):
+  points = {"S": {"value": 1, "subtotal": 0, "count": 0},
+            "M": {"value": 3, "subtotal": 0, "count": 0},
+            "L": {"value": 5, "subtotal": 0, "count": 0}
+            }
+  for story in stories:
+    sizing = story["score"]
+    points[sizing]["subtotal"] += points[sizing]["value"]
+    points[sizing]["count"] += 1
+  return points
+  
 
 def main():
   """
@@ -41,7 +52,7 @@ def main():
   response = requests.get(request_url, auth=requests.auth.HTTPBasicAuth(user_email, api_token))
   datum = json.loads(response.text)
   rollup_items = [item for item in datum['items'] if item['status'] in STATUSES_TO_ROLLUP]
-
+  point_dict = count_points(rollup_items)
   with codecs.open(OUTPUT_FILE, mode='w', encoding="utf-8") as file:
     for item in rollup_items:
       # url = "%s/%s" % (SPRINTLY_URL_BASE, item['id'])
@@ -55,6 +66,17 @@ def main():
         title=title, size=size, type=type, link=link, description=description
       )
       file.write(message)
+    total_points = 0
+    for size in ["S", "M", "L"]:
+      total_points += point_dict[size]["subtotal"]
+    points_message = u"""
+    Total points: %s
+    S: %s
+    M: %s
+    L: %s
+    """ % (total_points, point_dict["S"]["count"],
+           point_dict["M"]["count"], point_dict["L"]["count"])
+    file.write(points_message)
 
   """
   Metrics:
