@@ -47,7 +47,7 @@ def main():
   user_email = raw_input("Auth to the Sprintly API with which email?\n")
   api_token = raw_input("Auth to the Sprintly API with which API token?\n")
   query_tag = raw_input("Search the Sprintly API with which tag?\n")
-  descriptions = raw_input("Would you like to include descriptions for each item? (y/n)").lower()
+  descriptions = raw_input("Would you like to include descriptions for each item? (y/n) ").lower()
   request_url = API_BASE_URL + '/items/search.json?q=tag:%s' % query_tag
   # store your sprintly token in an environmental variable from your .bashrc:  export SPRINTLY_TOKEN="abcdefg"
   response = requests.get(request_url, auth=requests.auth.HTTPBasicAuth(user_email, api_token))
@@ -61,6 +61,7 @@ def main():
       size = item.get('score', '')
       type = item['type']
       link = item['short_url'].rstrip("/")
+      description = ""
       if descriptions == "yes" or descriptions == "y":
         description = item['description']
 
