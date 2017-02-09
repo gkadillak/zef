@@ -1,10 +1,13 @@
 import codecs
 import json
 import requests
+import string
+
 
 API_BASE_URL = 'https://sprint.ly/api'
 OUTPUT_FILE = 'planning.txt'
 STATUSES_TO_ROLLUP = ['completed', 'accepted']
+TEMPLATE = "planning_template.txt"
 
 # Search API URL for reference: https://sprint.ly/api/items/search.json?q=tag:spirit-112
 # Requires basic auth, with Sprintly API token as "password", email as "username"
@@ -54,7 +57,9 @@ def main():
   datum = json.loads(response.text)
   rollup_items = [item for item in datum['items'] if item['status'] in STATUSES_TO_ROLLUP]
   point_dict = count_points(rollup_items)
-  with codecs.open(OUTPUT_FILE, mode='w', encoding="utf-8") as file:
+  with codecs.open(OUTPUT_FILE, mode='w', encoding="utf-8") as file, codecs.open(TEMPLATE, mode='r', encoding="utf-8") as template:
+    src = string.Template(template.read())
+    stories = []
     for item in rollup_items:
       # url = "%s/%s" % (SPRINTLY_URL_BASE, item['id'])
       title = item['title']
@@ -65,21 +70,25 @@ def main():
       if descriptions == "yes" or descriptions == "y":
         description = item['description']
 
-      message = u'{title}\n{size} ({type}) [{link}]\n{description}\n'.format(
+      story = u'{title}\n{size} ({type}) [{link}]\n{description}'.format(
         title=title, size=size, type=type, link=link, description=description
       )
-      file.write(message)
-    total_points = 0
+      stories.append(story)
+    
+    sprint_total_points = 0
+    sprint_total_message = ""
     for size in ["S", "M", "L"]:
-      total_points += point_dict[size]["subtotal"]
-    points_message = u"""
-    Total points: %s
-    S: %s
-    M: %s
-    L: %s
-    """ % (total_points, point_dict["S"]["count"],
-           point_dict["M"]["count"], point_dict["L"]["count"])
-    file.write(points_message)
+      sprint_total_points += point_dict[size]["subtotal"]
+      sprint_total_message = u"""
+      Total points: %s
+      S: %s
+      M: %s
+      L: %s
+      """ % (sprint_total_points, point_dict["S"]["count"],
+             point_dict["M"]["count"], point_dict["L"]["count"])
+    template_mapping = {"stories": "\n".join(stories), "sprint_total_message": sprint_total_message}
+    result = src.safe_substitute(template_mapping)
+    file.write(result)
 
   """
   Metrics:

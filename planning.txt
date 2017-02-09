@@ -1,0 +1,190 @@
+As an operator, I want a clear UI/UX for client side validation during scheduled charge revision so that I can see any invalid data field before submitting it to the server.
+M (story) [http://sprint.ly/i/15733/6068]
+## Client-side validation changes
+
+1. Special scheduled charge case for: Avoid code erroring because there is no parent charge amount to be compared against to see if it is “excessive”
+2. Each refund item group needs to know if it is a scheduled charge or a charge, because in the case of a scheduled charge, the new input value must be compared to the original value to know if it is an incremental increase or decrease.  All refund item groups will then be summed to show the “Total” at the bottom of the dialog (which could now be positive).
+3. For editing scheduled charges, only $0.00 or negative values are disallowed. (need design for this)
+
+### Alternate form
+As an Operator, I want to have validation for editing scheduled charges so that I can’t submit $0.00 or negative amounts in an edit action.
+As an operator, I want to not see legacy scheduled charges in the refund dialog so that I'm not shown something that is not actionable.
+S (story) [http://sprint.ly/i/15733/6070]
+
+Enable editing scheduled charges for all operators
+S (task) [http://sprint.ly/i/15733/6344]
+Currently only certain users can edit or delete scheduled charges on production. Remove the permission check and enable scheduled charge editing for all operators
+Charges Service Integration Test coverage of invoice payment failure and invoice item modifability
+M (task) [http://sprint.ly/i/15733/6170]
+
+Also need help with:
+
+* Charge service integration test for adding a new payment source during invoice payment retry schedule
+
+When a new payment source added at some point in the retry schedule;
+* Verify if attempt_count is incremented
+* Verify if next_payment_attempt is modified (we expect not)
+Handle Location/Waypoint Push
+L (task) [http://sprint.ly/i/15733/6237]
+
+Refactor: Replace {{this.}} with {{property}} in Handlebars templates
+S (task) [http://sprint.ly/i/15733/6335]
+4 of our Handlebars templates are referencing properties on JS objects with {{this.propertyNameGoesHere}}. In most cases the "{{this." is unnecessary (except for {{this.[0]}}, {{this.[1]}}, etc) and we can just reference the property with just {{propertyNameGoesHere}}.
+
+This task will perform a find and replace to address this. We should test against the following affected views:
+- add_new_refund_item.handlebars
+- charge_dialog.handlebars
+- receipt_line_item.handlebars
+- receipt_renter_charges.handlebars
+All web requests broken for some users in a stale become user session
+S (defect) [http://sprint.ly/i/15733/6343]
+Horatio came to me with a bug he was experiencing.  He couldn't load any webapp page, and recalled that he had done a "become user" session some time ago.
+
+Stacktrace (from the logs):
+
+```
+18:55:21.668
+Error page being shown
+Hint: 9343e3aa
+Exception: 'admin_uid'
+Stack:   File "/base/data/home/runtimes/python27/python27_lib/versions/third_party/webapp2-2.3/webapp2.py", line 1505, in __call__
+    rv = self.router.dispatch(request, response)
+  File "/base/data/home/runtimes/python27/python27_lib/versions/third_party/webapp2-2.3/webapp2.py", line 1253, in default_dispatcher
+    return route.handler_adapter(request, response)
+  File "/base/data/home/runtimes/python27/python27_lib/versions/third_party/webapp2-2.3/webapp2.py", line 1077, in __call__
+    return handler.dispatch()
+  File "/base/data/home/apps/s~getaround3/170123212619-refund-scheduled-charge-server-side-errors.398682171329502562/getaround/servers/app/web/handlers/base_handler.py", line 194, in dispatch
+    log_request.log_request(self)
+  File "/base/data/home/apps/s~getaround3/170123212619-refund-scheduled-charge-server-side-errors.398682171329502562/getaround/servers/util/log_request.py", line 34, in log_request
+    admin_uid = session['admin_uid']
+  File "/base/data/home/apps/s~getaround3/170123212619-refund-scheduled-charge-server-side-errors.398682171329502562/deps/gae/venv-site-packages/beaker/session.py", line 668, in __getitem__
+    return self._session()[key]
+
+KeyError: 'admin_uid'
+Session state: 	signup_referer: https://www.getaround.com/smalls
+	_expires: 2017-03-15 01:29:24.804930
+	last_name: 
+	uid: 90403654
+	user_key: agxzfmdldGFyb3VuZDNyDQsSBFVzZXIYxuaNKww
+	first_name: 
+	is_become_user: True
+	owner: True
+	_accessed_time: 1485226521.66
+	ssid: 88e972360b1f71ccd416b150ebf12f3d
+	kind: active
+	name: Admin Override for Jessica Scorpio
+	access_token: EAAAALX9JCuoBAPmYSoxBAukgONlQH4QFGC0UzsZBm49NyZAG9t1P32StocvH8ShYZAOfgQwEqYWP5vpHwjtMNkkOj2CzncLZBBpnCNkUbutLl3ax20OaYELGgeSaJCyTNRwHId7mP49NBT2n4b6ZAxZAxZB8vqZA8IJWYm4DlocOZASI82wYCss3zsAywuVL8ZBPNejcm5aap8ZAKO3bNFeiDWE
+	signup_url: https://www.getaround.com/blade
+	username: jessica
+	admin: horatio@getaround.com
+	_id: 5812f2d48f7849ed93e4711f9f2136eb
+	_creation_time: 1484789322.74
+```
+Error Handling
+M (task) [http://sprint.ly/i/15733/6239]
+
+As an Operator, I want a list of always accessible links to pages that are not reachable by search (in Adminbrowser) so that I don’t need to bookmark pages or remember URLs to find such pages in Spirit.
+L (story) [http://sprint.ly/i/15733/6317]
+Create a base Backbone View for other views (in app.js) to inherit from
+Have views in app.js pass in a title string to be displayed in the navbar
+Rendering unit tests
+Sidebar, hardcode links to Phone Agent, MVR, etc
+Webflow Integration, attempt to integrate Webflow in a future-proof way (may include changes to Gruntfile.js)
+
+
+As an Operator, I want to be able to see edit actions for scheduled charges in the Spirit Trip Timeline so that I can understand history and auditability.
+M (story) [http://sprint.ly/i/15733/6090]
+
+Spirit Navbar: Greycliff Font
+S (task) [http://sprint.ly/i/15733/6334]
+- Currently Sommet is being imported in `theme.less`
+- Font overrides elsewhere should be refactored out
+- App-wide change to Greycliff seems doable (better to do this now for UI consistency)
+Shadowing: Helpdesk (Tier 1), Sales, Fleet, Helpdesk (Tier 2), Safety, Claims
+M (task) [http://sprint.ly/i/15733/6296]
+Write notes in [Dropbox Paper: Shadowing](https://paper.dropbox.com/doc/Shadowing-MQg8zHayRzcHseWUypOg1) as you go
+Request Realtime Location Update
+M (task) [http://sprint.ly/i/15733/6240]
+
+Remote Control Request Response
+S (task) [http://sprint.ly/i/15733/6244]
+
+Make all g3 web applications available via "side-staging"
+M (task) [http://sprint.ly/i/15733/6340]
+We want to test admin, spirit, etc without our changes clobbering/being clobbered by other developers' staging deployments
+
+Improve the side-staging concept and deployments to support our subdomain routing utilizing Google App Engine services (modules) for each subdomain.
+Request Remote Control
+L (task) [http://sprint.ly/i/15733/6242]
+
+Scrolling down on Spirit Car and Trip pages scrolls the map
+S (defect) [http://sprint.ly/i/15733/6322]
+This is a constant annoyance for our users.  Let's disable scroll zooming the map.
+
+## Expectation
+
+Scrolling down on the page (Car and Trip) will continue to scroll the page
+
+## Actual
+
+The page stops scrolling down in the browser, and the map begins zooming instead
+As an Operator, I want to be able to refund scheduled charges that were paid successfully in the same way as for other charges so that all charges can be refunded similarly.
+L (story) [http://sprint.ly/i/15733/6146]
+**Design Question:** On the read side of refund dialog, we need the **charge** of a **paid** scheduled charge instead of the item itself. We could fetch the charge either on frontend or backend
+
+## Frontend (Refund Dialog)
+* Pro: Efficient
+* Con: Complexity (fetch charges once refund dialog renders for the first time and store on the frontend not to make Stripe calls every time refund dialog is rendered)
+
+## Backend (ViewModel - TripReceipt)
+* Pro: URL of the Stripe icon will be the same between receipt and dialog
+* Con: Performance (you'd be fetching the charges of paid scheduled charges regardless of using it for refunds and we would be making redundant calls)
+As an operator, I want to see clear messages if there has been an error while editing a scheduled charge so that I know it's either safe to retry or should contact a Lead.
+S (story) [http://sprint.ly/i/15733/6069]
+## Exceptions inspected
+* `charges_service_exceptions.PaymentProviderTimeoutError`
+* `charges_service_exceptions.ChargesServiceException` 
+
+This item should ensure that in the refund logic (updating invoice item amount) for invoice items throws the same TimeoutError as `stripe_facade.refund_charge` (refunding a charge)
+
+This item should also update the refund copies to include the word **edit**
+Hubot Freight Proof of Concept
+M (task) [http://sprint.ly/i/15733/6347]
+* Start using `gbox` for daily dev
+* Spinning up a Hubot server locally and make it talk to Getaround Flowdock (proof of concept)
+* Spinning up a Freight server locally and `g3 deploy` to `g3staging` with it
+* String it all together (derisks the whole strategy)
+Side-staging webapp login for an owner does not work
+S (defect) [http://sprint.ly/i/15733/6342]
+## Expectation
+
+An owner logging into webapp on a "side staging" version will be redirected to /cars
+
+## Actual
+
+The login process does not work
+
+
+The original PR ended up having a few issues (cookie domain and _become user_).
+Spirit Navbar: Operator API for Agent Name and Avatar
+S (task) [http://sprint.ly/i/15733/6333]
+- Renders a SmallUserViewModel `as_json()` 
+- Use the existing `full_name` vmproperty value for “Name” in the Nav Bar
+- Avatar from the `photo` property, down-sized in CSS to 25px
+Card declined error is preventing schedule charge
+S (defect) [http://sprint.ly/i/15733/6290]
+[Defect Flow Thread](https://www.flowdock.com/app/getaround/defect/threads/6eCdZ2cSOtJTnxd4PUBMQz4-TEd)
+
+Operators schedule charging of a user whose card was declined when charging now.
+
+## Expectation
+
+Schedule charge should work even though their card was declined
+
+## Actual
+
+Card declined error is preventing scheduling of the charge (prevents creating the subscription in Stripe)
+
+$sprint_total
+
+$velocity
