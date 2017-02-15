@@ -18,6 +18,10 @@ def count_points(stories):
             }
   for story in stories:
     sizing = story["score"]
+    # Unsized story - SHAME
+    if sizing == "~":
+      continue
+
     points[sizing]["subtotal"] += points[sizing]["value"]
     points[sizing]["count"] += 1
   return points
@@ -39,10 +43,6 @@ def main():
 
   [[t-shirt size]] ([bug, feature, task]) [link to sprintly item] [[description of sprintly item]]
   [include interrupt tag if it exists]
-
-  Points in progress:
-
-  [points for unfinished stories (would be nice to have size breakdown, links here)]
   """
   # TODO:  Sum the points, count up sizes (aka score fields), include interrupt tags
   # TODO: Sum trailing 4 sprints for a "velocity"
@@ -86,7 +86,7 @@ def main():
       L: %s
       """ % (sprint_total_points, point_dict["S"]["count"],
              point_dict["M"]["count"], point_dict["L"]["count"])
-    template_mapping = {"stories": "\n".join(stories), "sprint_total_message": sprint_total_message}
+    template_mapping = {"stories": "\n".join(stories), "sprint_total": sprint_total_message}
     result = src.safe_substitute(template_mapping)
     file.write(result)
 
