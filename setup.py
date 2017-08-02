@@ -15,7 +15,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'zfetch = zenfetch.zenfetch:cli'
+            'zef = zenfetch.command_line:cli'
         ]
     }
 

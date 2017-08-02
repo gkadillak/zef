@@ -39,6 +39,6 @@ def fetch_milestones():
 @authenticated
 def fetch_issues_for_milestone(milestone_id):
     auth = ('token', ACCESS_TOKEN)
-    endpoint = ENDPOINT + MILESTONE_ISSUES.format(milestone=milestone_id)
+    endpoint = MILESTONE_ISSUES.format(milestone=milestone_id)
 
     return requests.get(endpoint, auth=auth)

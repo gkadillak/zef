@@ -1,7 +1,7 @@
-from .. import services
+from ..services import github_service
 
 def ordered():
-    milestones = services.get_milestones()
+    milestones = github_service.get_milestones()
     milestones.sort(key=lambda m: m.title, reverse=True)
     return milestones
 
