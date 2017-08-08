@@ -15,7 +15,8 @@ ISSUE_ATTRIBUTES = [
     'url', 'repository_url', 'labels_url', 'comments_url',
     'events_url', 'html_url', 'id', 'number', 'title', 'user',
     'labels', 'state', 'locked', 'assignee', 'assignees', 'milestone',
-    'comments', 'created_at', 'updated_at', 'closed_at', 'body'
+    'comments', 'created_at', 'updated_at', 'closed_at', 'body', 'score',
+    'pull_request'
 ]
 
 Issue = collections.namedtuple('Issue', ISSUE_ATTRIBUTES)
@@ -50,3 +51,21 @@ def get_issues(milestone_id):
         return
 
     return [Issue(**issue) for issue in issues]
+
+
+def get_search_issues(**search):
+    """
+    Fetch issues given search key, value pairs
+    """
+    issues = json.loads(github_facade.fetch_search_issues(**search).text)
+
+    if not issues:
+        return
+
+    result = []
+    for attrs in issues.get('items'):
+        # set all fields to None to allow for defaults
+        Issue.__new__.__defaults__ = (None,) * len(Issue._fields)
+        result.append(Issue(**attrs))
+
+    return result

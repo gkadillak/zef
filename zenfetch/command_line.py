@@ -1,6 +1,6 @@
 import click
 
-from .public import milestones, issues
+from .public import milestones, display_issues
 
 
 class Config(object):
@@ -19,19 +19,16 @@ def cli(config):
     pass
 
 @cli.command()
-@click.option('--username', '-u', help='Search for issues by username')
+@click.option('--username', '-u', type=click.STRING, help='Search for issues by username')
 @click.option('--title', '-t', type=click.STRING, help='Search for issues by title')
-@click.option('--milestone', '-m', help='Search for issues by milestone name')
+@click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
 def issues(username, title, milestone):
     # what's the best way to nest options?
     if username:
-        click.echo('searching by username %s' % username)
+        click.echo(display_issues.search_issues(assignee=username))
 
     if title:
         click.echo('searching by title %s' % title)
 
     if milestone:
-        click.echo('searching by milestone %s' % milestone)
-
-
-
+        return milestones.display
