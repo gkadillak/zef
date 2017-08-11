@@ -11,6 +11,8 @@ MILESTONE_ATTRIBUTES = [
 ]
 Milestone = collections.namedtuple('Milestone', MILESTONE_ATTRIBUTES)
 
+DISPLAY = '{}\n\n'
+
 ISSUE_ATTRIBUTES = [
     'url', 'repository_url', 'labels_url', 'comments_url',
     'events_url', 'html_url', 'id', 'number', 'title', 'user',
@@ -69,3 +71,21 @@ def get_search_issues(**search):
         result.append(Issue(**attrs))
 
     return result
+
+def display_issues(milestone_id):
+    issues = get_issues(milestone_id)
+    return ''.join([DISPLAY.format(issue.body) for issue in issues])
+
+def search_issues(**search):
+    issues = get_search_issues(**search)
+    return ''.join([DISPLAY.format(issue.body) for issue in issues])
+
+def display_milestones(milestones):
+    display = ['%s %s' % (idx, milestone.title)
+            for idx, milestone in enumerate(milestones, start=1)]
+    return '\n'.join(display)
+
+def ordered_milestones():
+    milestones = get_milestones()
+    milestones.sort(key=lambda m: m.title, reverse=True)
+    return milestones

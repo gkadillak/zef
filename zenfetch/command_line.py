@@ -1,6 +1,6 @@
 import click
 
-from .public import milestones, display_issues
+from .services import github_service
 
 
 class Config(object):
@@ -24,11 +24,14 @@ def cli(config):
 @click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
 def issues(username, title, milestone):
     # what's the best way to nest options?
+    search = {}
     if username:
-        click.echo(display_issues.search_issues(assignee=username))
+        search['assignee'] = username
 
     if title:
-        click.echo('searching by title %s' % title)
+        search['title'] = title
 
     if milestone:
-        return milestones.display
+        search['milestone'] = milestone
+
+    click.echo(github_service.search_issues(**search))
