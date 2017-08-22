@@ -3,7 +3,7 @@ import json
 
 from ..facades import github_facade
 
-
+# TODO: Move all display logic into the service
 MILESTONE_ATTRIBUTES = [
     'description', 'title', 'url', 'labels_url', 'created_at',
     'creator', 'number', 'html_url', 'updated_at', 'due_on',

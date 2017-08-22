@@ -19,10 +19,11 @@ def cli(config):
     pass
 
 @cli.command()
+@click.option('--label', '-l', type=click.STRING, help='Search for issues by label')
 @click.option('--username', '-u', type=click.STRING, help='Search for issues by username')
 @click.option('--title', '-t', type=click.STRING, help='Search for issues by title')
 @click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
-def issues(username, title, milestone):
+def issues(username, title, milestone, label):
     # what's the best way to nest options?
     search = {}
     if username:
@@ -34,4 +35,9 @@ def issues(username, title, milestone):
     if milestone:
         search['milestone'] = milestone
 
-    click.echo(github_service.search_issues(**search))
+    if label:
+        search['labels'] = label
+
+    results = github_service.search_issues(**search)
+    click.echo(results)
+    click.echo("Number of results: %s" % len(results))
