@@ -1,9 +1,12 @@
+import logging
 import os
 
 import requests
 from requests.auth import HTTPBasicAuth
 
 from .. import exceptions
+
+logger = logging.getLogger(__name__)
 
 BASE_ENDPOINT = 'https://api.github.com'
 REPO_ENDPOINT = BASE_ENDPOINT + 'repos/Getaround/getaround3'
@@ -66,4 +69,5 @@ def fetch_search_issues(**search):
 
     auth = ('token', ACCESS_TOKEN)
     url = SEARCH_ISSUES_ENDPOINT + query
+    logger.info('Issues search: %s' % query)
     return requests.get(url, auth=auth)
