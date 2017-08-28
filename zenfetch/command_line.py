@@ -1,6 +1,7 @@
 import click
 
-from .services import issue_service
+from .services import issue_service, repository_service
+from .interfaces import issues_interface
 
 
 class Config(object):
@@ -19,16 +20,17 @@ def cli(config):
     pass
 
 @cli.command()
-@click.option('--count/--no-count', default=False, help='Return a count of number of results')
+@click.option('--save-for-fixture/--dont-save-fixture', default=False, help='Save for testing data')
+@click.option('--repo', '-r', type=click.STRING, help='Specify repo for issues')
 @click.option('--label', '-l', type=click.STRING, help='Search for issues by label')
-@click.option('--username', '-u', type=click.STRING, help='Search for issues by username')
+@click.option('--assignee', '-a', type=click.STRING, help='Search for issues by username')
 @click.option('--title', '-t', type=click.STRING, help='Search for issues by title')
 @click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
-def issues(username, title, milestone, label, count):
+def issues(milestone, title, assignee, label, repo, save_for_fixture):
     # what's the best way to nest options?
     search = {}
-    if username:
-        search['assignee'] = username
+    if assignee:
+        search['assignee'] = assignee
 
     if title:
         search['title'] = title
@@ -39,4 +41,9 @@ def issues(username, title, milestone, label, count):
     if label:
         search['labels'] = label
 
-    click.echo(issue_service.search_issues(count=count, **search))
+    if repo:
+        search['repo'] = repo
+
+    issues = issue_service.get_search_issues(save_for_fixture=save_for_fixture, **search)
+    issue_ids = issue_service.issues_attr(issues, 'number')
+    click.echo(issues_interface.total_points_for_issues(issue_ids, repo))
