@@ -18,13 +18,13 @@ ISSUE_ATTRIBUTES = [
 Issue = collections.namedtuple('Issue', ISSUE_ATTRIBUTES)
 
 
-def get_search_issues(save_for_fixture, **search):
+def get_search_issues(save_for_testing, **search):
     """
     Fetch issues given search key, value pairs
     """
     issues = json.loads(github_facade.fetch_search_issues(**search).text)
 
-    if save_for_fixture:
+    if save_for_testing:
         fixtures_file_path = settings.PROJECT_ROOT + '/tests/fixtures/issues_fixture.txt'
         with open(fixtures_file_path, 'w') as f:
             f.write(json.dumps(issues))
@@ -44,6 +44,9 @@ def get_search_issues(save_for_fixture, **search):
 
 def issues_attr(issues, attr_name):
     results = []
+    if not issues:
+        return
+
     for issue in issues:
         value = getattr(issue, attr_name)
         if value:
@@ -62,4 +65,3 @@ def search_issues(count=False, **search):
         issues_display += "Count: %s" % issues.get('count')
 
     return issues_display
-

@@ -20,13 +20,13 @@ def cli(config):
     pass
 
 @cli.command()
-@click.option('--save-for-fixture/--dont-save-fixture', default=False, help='Save for testing data')
+@click.option('--save-for-testing/--dont-save-fixture', default=False, help='Save for testing data')
 @click.option('--repo', '-r', type=click.STRING, help='Specify repo for issues')
 @click.option('--label', '-l', type=click.STRING, help='Search for issues by label')
 @click.option('--assignee', '-a', type=click.STRING, help='Search for issues by username')
 @click.option('--title', '-t', type=click.STRING, help='Search for issues by title')
 @click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
-def issues(milestone, title, assignee, label, repo, save_for_fixture):
+def points(milestone, title, assignee, label, repo, save_for_testing):
     # what's the best way to nest options?
     search = {}
     if assignee:
@@ -39,11 +39,13 @@ def issues(milestone, title, assignee, label, repo, save_for_fixture):
         search['milestone'] = milestone
 
     if label:
-        search['labels'] = label
+        search['label'] = label
 
     if repo:
         search['repo'] = repo
 
-    issues = issue_service.get_search_issues(save_for_fixture=save_for_fixture, **search)
+    issues = issue_service.get_search_issues(save_for_testing=save_for_testing, **search)
     issue_ids = issue_service.issues_attr(issues, 'number')
+    if not issue_ids:
+        return
     click.echo(issues_interface.total_points_for_issues(issue_ids, repo))
