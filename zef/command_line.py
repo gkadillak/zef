@@ -15,18 +15,19 @@ pass_config = click.make_pass_decorator(Config, ensure=True)
 @click.group(name='cli')
 @pass_config
 def cli(config):
-    """Fetches tickets from Zenhub
-    """
     pass
 
 @cli.command()
-@click.option('--save-for-testing/--dont-save-fixture', default=False, help='Save for testing data')
+@click.option('--fixture-filename', type=click.STRING, help='Save for fixture with given name')
 @click.option('--repo', '-r', type=click.STRING, help='Specify repo for issues')
 @click.option('--label', '-l', type=click.STRING, help='Search for issues by label')
 @click.option('--assignee', '-a', type=click.STRING, help='Search for issues by username')
 @click.option('--title', '-t', type=click.STRING, help='Search for issues by title')
 @click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
-def points(milestone, title, assignee, label, repo, save_for_testing):
+def points(milestone, title, assignee, label, repo, fixture_filename):
+    """
+    Count of points from a given query
+    """
     # what's the best way to nest options?
     search = {}
     if assignee:
@@ -44,7 +45,7 @@ def points(milestone, title, assignee, label, repo, save_for_testing):
     if repo:
         search['repo'] = repo
 
-    issues = issue_service.get_search_issues(save_for_testing=save_for_testing, **search)
+    issues = issue_service.get_search_issues(fixture_filename, **search)
     issue_ids = issue_service.issues_attr(issues, 'number')
     if not issue_ids:
         return
