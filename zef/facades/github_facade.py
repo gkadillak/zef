@@ -94,5 +94,4 @@ def fetch_search_issues(**search):
 
     auth = ('gkadillak', ACCESS_TOKEN)
     url = SEARCH_ISSUES_ENDPOINT + query
-    logger.warn('Issues search: %s', query)
     return requests.get(url, auth=auth)

@@ -21,5 +21,4 @@ def fetch_issue(repo_id=None, issue_id=None):
 
     issue_endpoint = ISSUE_ENDPOINT.format(repo_id=repo_id, issue_id=issue_id)
     headers = {'X-Authentication-Token': API_TOKEN}
-    logger.warn('Zenhub fetch for issue: %s', issue_endpoint)
     return requests.get(issue_endpoint, headers=headers)
