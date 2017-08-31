@@ -27,6 +27,14 @@ def cli(config):
 def points(milestone, title, assignee, label, repo, fixture_filename):
     """
     Count of points from a given query
+
+    Examples:
+
+    Points for a user for a given sprint
+    $ zef --repo getaround/getaroun3 --assignee gkadillak --milestone web-128
+
+    Total interrupts for a given sprint
+    $ zef --repo getaround/getaround3 --label interrupt
     """
     # what's the best way to nest options?
     search = {}
