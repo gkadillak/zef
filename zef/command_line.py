@@ -57,4 +57,14 @@ def points(milestone, title, assignee, label, repo, fixture_filename):
     issue_ids = issue_service.issues_attr(issues, 'number')
     if not issue_ids:
         return
-    click.echo(issues_interface.total_points_for_issues(issue_ids, repo))
+    click.echo('Total points: %s' % issues_interface.total_points_for_issues(issue_ids, repo))
+
+@cli.command()
+@click.option('--fixture-filename', type=click.STRING, help='Save for fixture with given name')
+@click.option('--repo', '-r', type=click.STRING, help='Specify repo for issues')
+@click.option('--label', '-l', type=click.STRING, help='Search for issues by label')
+@click.option('--assignee', '-a', type=click.STRING, help='Search for issues by username')
+@click.option('--title', '-t', type=click.STRING, help='Search for issues by title')
+@click.option('--milestone', '-m', type=click.STRING, help='Search for issues by milestone name')
+def issues(milestone, title, assignee, label, repo, fixture_filename):
+    pass
