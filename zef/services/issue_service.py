@@ -2,8 +2,8 @@ import collections
 import json
 import pprint
 
-from ..facades import github_facade
-import settings
+from zef.facades import github_facade
+from zef import settings
 
 DISPLAY = '{}\n\n'
 
@@ -32,11 +32,11 @@ def create_test_fixture(fixture_filename, issues):
             pretty_json = pprint.pprint(json.dumps(issues))
             f.write(pretty_json)
 
-def get_search_issues(fixture_filename, **search):
+def get_search_issues(fixture_filename, verbose=False, **search):
     """
     Fetch issues given search key, value pairs
     """
-    issues = json.loads(github_facade.fetch_search_issues(**search).text)
+    issues = json.loads(github_facade.fetch_search_issues(verbose=verbose, **search).text)
     create_test_fixture(fixture_filename, issues)
 
     items = issues.get('items')

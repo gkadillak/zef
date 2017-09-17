@@ -1,3 +1,4 @@
+import click
 import logging
 import os
 
@@ -10,23 +11,23 @@ BOARD_ENDPOINT = BASE_ENDPOINT + '/repositories/{repo_id}/board'
 
 API_TOKEN = os.environ.get('ZENHUB_API_TOKEN')
 
-logger = logging.getLogger(__file__)
 
-
-def _get_request(endpoint):
+def _get_request(endpoint, verbose):
     """
     Make a GET request to the given endpoint
 
-    @param str endpoint: Who to request
+    @param str endpoint: Query for resource
 
     @return Response
     @rtype: requests.models.Response
     """
     headers = {'X-Authentication-Token': API_TOKEN}
+    if verbose:
+        click.echo('Zenhub request: %s' % endpoint)
     return requests.get(endpoint, headers=headers)
 
 # token is sent in the X-Authentication-Token header
-def fetch_issue(repo_id=None, issue_id=None):
+def fetch_issue(repo_id=None, issue_id=None, verbose=False):
     """
     Fetch information about an issue from Zenhub
     """
@@ -34,9 +35,9 @@ def fetch_issue(repo_id=None, issue_id=None):
         raise ValueError('Repo ID and issue ID necessary for request')
 
     issue_endpoint = ISSUE_ENDPOINT.format(repo_id=repo_id, issue_id=issue_id)
-    return _get_request(issue_endpoint)
+    return _get_request(issue_endpoint, verbose=verbose)
 
-def fetch_board(repo_id):
+def fetch_board(repo_id, verbose=False):
     """
     Fetch the details of the board for a given sprint. This returns all
     issues for all pipelines for the board excluding the closed issues.
@@ -51,4 +52,4 @@ def fetch_board(repo_id):
         raise ValueError('Repo ID needed to make request')
 
     board_endpoint = BOARD_ENDPOINT.format(repo_id=repo_id)
-    return _get_request(board_endpoint)
+    return _get_request(board_endpoint, verbose=verbose)

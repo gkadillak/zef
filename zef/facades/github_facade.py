@@ -1,83 +1,67 @@
+import click
 import logging
 import os
-
 import requests
+
 from requests.auth import HTTPBasicAuth
 
-from .. import exceptions
+from zef import exceptions
+from zef import settings
 
-logger = logging.getLogger(__name__)
 
 BASE_ENDPOINT = 'https://api.github.com'
-REPO_ENDPOINT = BASE_ENDPOINT + 'repos/Getaround/getaround3'
-MILESTONES = REPO_ENDPOINT + '/milestones'
+REPO_ENDPOINT = BASE_ENDPOINT + '/repos/Getaround/getaround3'
 SEARCH_ISSUES_ENDPOINT = BASE_ENDPOINT + '/search/issues'
-MILESTONE_ISSUES = REPO_ENDPOINT + '/issues?milestone={milestone}'
 SEARCH_REPOSITORIES_ENDPOINT = BASE_ENDPOINT + '/search/repositories'
 
-ACCESS_TOKEN = os.environ.get('GITHUB_ACCESS_TOKEN')
-
-PIPELINE_CHOICES_MAP = {
-    'in_progress': 'In Progress',
-    'new_issues': 'New Issues',
-    'done': 'Done',
-    'icebox': 'Icebox',
-    'review': 'Review/QA',
-    'backlog': 'Backlog'
-}
 ## Helpers and wrappers
+# TODO: create a single helper that makes requests so you
+# only have to check once if request is authenticated
 def authenticated(func):
     """Make sure that the user has credentials"""
     def inner(*args, **kwargs):
-        if not ACCESS_TOKEN:
+        if not settings.GITHUB_ACCESS_TOKEN:
             raise exceptions.CredentialsNotFoundError
         return func(*args, **kwargs)
     return inner
 
-def _assemble_search_query(base_search=None, **search):
+def _assemble_search_query(base_search=None, verbose=False, **search):
     """
-    Given keyword arguments, return the string to be used
-    to query for the given entities for the search endpoint
+    Takes keyword arguments and converts them into a query string
+    that can be used for the search endpoint in Github
+
+    >>> _assemble_search_query(base_search='windows', label='bug', language='python')
+    '?q=windows+label:bug+language:python'
+
+    >>> _assemble_search_query(base_search=None, label='feature', assignee='gkadillak')
+    '?q=label:feature+assignee:gkadillak'
     """
     query_str = '?q='
     query = query_str + base_search if base_search else query_str
+    search_format = '+{key}:{value}' if base_search else '{key}:{value}+'
+
     for key, value in search.items():
-        query += '{key}:{value}+'.format(key=key, value=value) if value else '{key}+'.format(key=key)
+        query += search_format.format(key=key, value=value) if value else '{key}+'.format(key=key)
     query = query.rstrip('+')
+    if verbose:
+        click.echo('Request to Github: %s' % query)
     return query
 
 @authenticated
-def fetch_milestones():
-    """
-    Retrieve the list of milestones for the given repository
-    """
-    auth = ('token', ACCESS_TOKEN)
-    
-    return requests.get(MILESTONES, auth=auth)
-
-@authenticated
-def fetch_issues_for_milestone(milestone_id):
-    auth = ('token', ACCESS_TOKEN)
-    endpoint = MILESTONE_ISSUES.format(milestone=milestone_id)
-
-    return requests.get(endpoint, auth=auth)
-
-@authenticated
-def fetch_repositories(base_search, **search):
+def fetch_repositories(repo_name, verbose=False, **search):
     """
     Fetch the information about a given repository
 
     @param str base_search: Title of the repository
-    @param search: keyword arguments to be used to refine search
+    @param search: Keyword arguments to be used to refine search
     """
-    query = _assemble_search_query(base_search, **search)
+    query = _assemble_search_query(base_search=repo_name, verbose=verbose, **search)
     url = SEARCH_REPOSITORIES_ENDPOINT + query
-    auth = ('gkadillak', ACCESS_TOKEN)
-    logger.warn('Issues search: %s', query)
+    auth = (settings.GITHUB_USERNAME, settings.GITHUB_ACCESS_TOKEN)
     return requests.get(url, auth=auth)
 
 @authenticated
-def fetch_search_issues(**search):
+def fetch_search_issues(verbose=False, **search):
     """
     Search through all issues in github according to given
     options: https://developer.github.com/v3/search/#search-issues
@@ -90,8 +74,8 @@ def fetch_search_issues(**search):
         raise InsufficientSearchParametersError
 
     # TODO: add sort and created as extra query parameters. Not sure if needed now
-    query = _assemble_search_query(**search)
+    query = _assemble_search_query(verbose=verbose, **search)
 
-    auth = ('gkadillak', ACCESS_TOKEN)
+    auth = (settings.GITHUB_USERNAME, settings.GITHUB_ACCESS_TOKEN)
     url = SEARCH_ISSUES_ENDPOINT + query
     return requests.get(url, auth=auth)
