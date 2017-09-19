@@ -1,10 +1,12 @@
 import click
 
-from .services import issue_service, repository_service
-from .interfaces import issues_interface
+from zef.services import points_service
 
 
 class Config(object):
+    """
+    Object to keep state between commands
+    """
 
     def __init__(self):
         self.selection = None
@@ -55,9 +57,8 @@ def points(milestone, title, assignee, label, repo, fixture_filename, verbose=Fa
     if repo:
         search['repo'] = repo
 
-    issues = issue_service.get_search_issues(fixture_filename, verbose=verbose, **search)
-    issue_ids = issue_service.issues_attr(issues, 'number')
-    click.echo('Total points: %s' % issues_interface.total_points_for_issues(issue_ids, repo, verbose=verbose))
+    count_of_points = points_service.total_points(fixture_filename=fixture_filename, verbose=verbose, **search)
+    click.echo('Total points: %s' % count_of_points)
 
 @cli.command()
 @click.option('--fixture-filename', type=click.STRING, help='Save for fixture with given name')
