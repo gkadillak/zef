@@ -18,10 +18,14 @@ SEARCH_REPOSITORIES_ENDPOINT = BASE_ENDPOINT + '/search/repositories'
 # TODO: create a single helper that makes requests so you
 # only have to check once if request is authenticated
 def authenticated(func):
-    """Make sure that the user has credentials"""
+    """
+    Decorator to ensure that credentials for the request are availabl
+
+    @raises exceptions.CredentialsNotFoundError
+    """
     def inner(*args, **kwargs):
         if not settings.GITHUB_ACCESS_TOKEN:
-            raise exceptions.CredentialsNotFoundError
+            raise exceptions.CredentialsNotFoundError('Environmental variable not found: GITHUB_ACCESS_TOKEN')
         return func(*args, **kwargs)
     return inner
 
@@ -35,6 +39,13 @@ def _assemble_search_query(base_search=None, verbose=False, **search):
 
     >>> _assemble_search_query(base_search=None, label='feature', assignee='gkadillak')
     '?q=label:feature+assignee:gkadillak'
+
+    @param base_search str: The endoint
+    @param verbose bool: Print the request to stdout
+    @param search dict: Values to use to create query
+
+    @rtype: str
+    @return: Endpoint with query string for Github
     """
     query_str = '?q='
     query = query_str + base_search if base_search else query_str
@@ -54,6 +65,8 @@ def fetch_repositories(repo_name, verbose=False, **search):
 
     @param str base_search: Title of the repository
     @param search: Keyword arguments to be used to refine search
+
+    @return: Response from GET request
     """
     query = _assemble_search_query(base_search=repo_name, verbose=verbose, **search)
     url = SEARCH_REPOSITORIES_ENDPOINT + query
@@ -68,7 +81,9 @@ def fetch_search_issues(verbose=False, **search):
 
     This endpoint doesn't have to be authenticated.
 
-    @params: key, value pairs of search terms passed to github
+    @params: key, value pairs of search terms passed to Github
+
+    @return: Response from GET request
     """
     if not all([search.keys()]):
         raise InsufficientSearchParametersError

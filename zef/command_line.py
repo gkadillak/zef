@@ -35,7 +35,7 @@ def points(milestone, title, assignee, label, repo, fixture_filename, verbose=Fa
 
     Points for a user for a given sprint:
 
-    $ zef --repo getaround/getaroun3 --assignee gkadillak --milestone web-128
+    $ zef --repo getaround/getaround3 --assignee gkadillak --milestone web-128
 
     Total interrupts for a given sprint:
 
@@ -61,7 +61,7 @@ def points(milestone, title, assignee, label, repo, fixture_filename, verbose=Fa
     click.echo('Total points: %s' % count_of_points)
 
 @cli.command()
-@click.option('--fixture-filename', type=click.STRING, help='Save for fixture with given name')
+@click.option('--fixture-filename', type=click.STRING, help='Create fixture file with given name')
 @click.option('--repo', '-r', type=click.STRING, help='Specify repo for issues')
 @click.option('--label', '-l', type=click.STRING, help='Search for issues by label')
 @click.option('--assignee', '-a', type=click.STRING, help='Search for issues by username')

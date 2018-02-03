@@ -6,7 +6,7 @@ Create a virtual environment and install the dependencies
 ```bash
 $ virtualenv venv --python=python3
 $ . venv/bin/active
-$ pip install requirements.txt
+$ pip install -r requirements.txt
 ```
 
 pip 'install' the package (until it's officially on pypi)
